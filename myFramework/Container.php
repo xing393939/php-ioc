@@ -1,13 +1,15 @@
 <?php
+
 namespace MyFramework;
 
-class Container
+class Container implements \ArrayAccess
 {
     /**
      *  容器绑定，用来装提供的实例或者 提供实例的回调函数
      * @var array
      */
-    public $building = [];
+    protected $building = [];
+    protected $instances = [];
 
     /**
      * 注册一个绑定到容器
@@ -62,8 +64,14 @@ class Container
 
         if ($this->isBuildable($concrete, $abstract)) {
             $object = $this->build($concrete);
+        } elseif (is_object($concrete)) {
+            $object = $concrete;
         } else {
             $object = $this->make($concrete);
+        }
+
+        if (empty($this->instances[$abstract])) {
+            $this->instances[$abstract] = $object;
         }
 
         return $object;
@@ -79,8 +87,12 @@ class Container
         if (!isset($this->building[$abstract])) {
             return $abstract;
         }
-
-        return $this->building[$abstract]['concrete'];
+        if ($this->building[$abstract]["shared"]
+            && !empty($this->instances[$abstract])) {
+            return $this->instances[$abstract];
+        } else {
+            return $this->building[$abstract]['concrete'];
+        }
     }
 
     /**
@@ -156,4 +168,62 @@ class Container
 
     }
 
+    public function extend($abstract, $func)
+    {
+
+    }
+    public function instance($abstract, $instance)
+    {
+        $this->instances[$abstract] = $instance;
+    }
+    public function bound($abstract)
+    {
+
+    }
+    /**
+     * Determine if a given offset exists.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function offsetExists($key)
+    {
+        return $this->bound($key);
+    }
+
+    /**
+     * Get the value at a given offset.
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function offsetGet($key)
+    {
+        return $this->make($key);
+    }
+
+    /**
+     * Set the value at a given offset.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($key, $value)
+    {
+        $this->bind($key, $value instanceof Closure ? $value : function () use ($value) {
+            return $value;
+        });
+    }
+
+    /**
+     * Unset the value at a given offset.
+     *
+     * @param string $key
+     * @return void
+     */
+    public function offsetUnset($key)
+    {
+        unset($this->bindings[$key], $this->instances[$key], $this->resolved[$key]);
+    }
 }
