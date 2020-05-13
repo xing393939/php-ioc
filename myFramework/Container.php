@@ -8,7 +8,7 @@ class Container implements \ArrayAccess
      *  容器绑定，用来装提供的实例或者 提供实例的回调函数
      * @var array
      */
-    protected $building = [];
+    protected $bindings = [];
     protected $instances = [];
 
     /**
@@ -27,7 +27,7 @@ class Container implements \ArrayAccess
             $concrete = $this->getClosure($abstract, $concrete);
         }
 
-        $this->building[$abstract] = compact("concrete", "shared");
+        $this->bindings[$abstract] = compact("concrete", "shared");
     }
 
     //注册一个共享的绑定 单例
@@ -41,7 +41,7 @@ class Container implements \ArrayAccess
      *
      * @param $abstract
      * @param $concrete
-     * @return Closure
+     * @return \Closure
      */
     public function getClosure($abstract, $concrete)
     {
@@ -56,21 +56,22 @@ class Container implements \ArrayAccess
      * 生成实例
      * @param $abstract
      * @return mixed|object
-     * @throws Exception
      */
     public function make($abstract)
     {
+        if (isset($this->instances[$abstract])) {
+            return $this->instances[$abstract];
+        }
         $concrete = $this->getConcrete($abstract);
 
         if ($this->isBuildable($concrete, $abstract)) {
             $object = $this->build($concrete);
-        } elseif (is_object($concrete)) {
-            $object = $concrete;
         } else {
             $object = $this->make($concrete);
         }
 
-        if (empty($this->instances[$abstract])) {
+        if (!empty($this->bindings[$abstract]) ||
+            !empty($this->bindings[$abstract]["shared"])) {
             $this->instances[$abstract] = $object;
         }
 
@@ -84,15 +85,11 @@ class Container implements \ArrayAccess
      */
     public function getConcrete($abstract)
     {
-        if (!isset($this->building[$abstract])) {
+        if (!isset($this->bindings[$abstract])) {
             return $abstract;
         }
-        if ($this->building[$abstract]["shared"]
-            && !empty($this->instances[$abstract])) {
-            return $this->instances[$abstract];
-        } else {
-            return $this->building[$abstract]['concrete'];
-        }
+
+        return $this->bindings[$abstract]['concrete'];
     }
 
     /**
@@ -214,7 +211,7 @@ class Container implements \ArrayAccess
      */
     public function offsetSet($key, $value)
     {
-        $this->bind($key, $value instanceof Closure ? $value : function () use ($value) {
+        $this->bind($key, $value instanceof \Closure ? $value : function () use ($value) {
             return $value;
         });
     }
