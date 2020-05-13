@@ -172,14 +172,17 @@ class Container implements \ArrayAccess
     {
 
     }
+
     public function instance($abstract, $instance)
     {
         $this->instances[$abstract] = $instance;
     }
+
     public function bound($abstract)
     {
 
     }
+
     /**
      * Determine if a given offset exists.
      *
