@@ -12,6 +12,6 @@ class Dog implements Animal
 
     public function eat()
     {
-        return '吃：' . $this->food->name;
+        return '吃：' . $this->food->getName();
     }
 }
