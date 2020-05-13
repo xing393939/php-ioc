@@ -1,15 +1,15 @@
 <?php
 // https://www.jianshu.com/p/acab664daddf
+require __DIR__ . "/../vendor/autoload.php";
 
-spl_autoload_register();
+//example 1
+$app = new \MyFramework\Container();
+$app->bind('cat', 'MyFramework\Tests\Cat');
+$cat = $app->make("cat");
+echo $cat->eat();
 
-//实例化容器类
-$app = new Core\Container();
-
-$app->bind('Core\Module\Animal', 'Core\Module\Dog');
-//$app->bind('Animal', 'Core\Module\Dog');
-$people = $app->make(\Core\Module\People::class);
-
-//调用方法
-echo $people->findDog();
-
+//example 2
+$app = new \MyFramework\Container();
+$app->bind('MyFramework\Tests\Animal', 'MyFramework\Tests\Cat');
+$people = $app->make(\MyFramework\Tests\People::class);
+echo $people->watch();

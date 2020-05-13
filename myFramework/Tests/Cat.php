@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Core\Module;
+namespace MyFramework\Tests;
 
 
 class Cat implements Animal
 {
     function eat()
     {
-        echo "吃鱼";
+        echo "吃：鱼";
     }
 
 }

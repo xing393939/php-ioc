@@ -1,5 +1,5 @@
 <?php
-namespace Core\Module;
+namespace MyFramework\Tests;
 
 class Dog implements Animal
 {

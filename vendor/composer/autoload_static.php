@@ -50,6 +50,10 @@ class ComposerStaticInitbbc0c10f4f22a641758096e37bc15e0c
             'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
         ),
+        'M' => 
+        array (
+            'MyFramework\\' => 12,
+        ),
         'I' => 
         array (
             'Illuminate\\View\\' => 16,
@@ -174,6 +178,10 @@ class ComposerStaticInitbbc0c10f4f22a641758096e37bc15e0c
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'MyFramework\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/myFramework',
         ),
         'Illuminate\\View\\' => 
         array (
